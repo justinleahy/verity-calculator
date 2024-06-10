@@ -69,6 +69,9 @@
 
       neededSymbols: function() {
         let retVal = {};
+
+        
+
         if(this.insideGuardianLeft) {
           retVal.left = [];
           if(this.outsideGuardianLeft) {
@@ -78,6 +81,9 @@
             }
             if(leftObject.symbol2 === this.insideGuardianLeft) {
               retVal.left.push(this.insideGuardianLeft);
+            }
+            if(retVal.left.length === 0 && leftObject.symbol1 === leftObject.symbol2) {
+                retVal.left.push(leftObject.symbol1);
             }
           }
         }
@@ -91,6 +97,9 @@
             if(middleObject.symbol2 === this.insideGuardianMiddle) {
               retVal.middle.push(this.insideGuardianMiddle);
             }
+            if(retVal.middle.length === 0 && middleObject.symbol1 === middleObject.symbol2) {
+                retVal.middle.push(middleObject.symbol1);
+            }
           }
         }
         if(this.insideGuardianRight) {
@@ -103,7 +112,37 @@
             if(rightObject.symbol2 === this.insideGuardianRight) {
               retVal.right.push(this.insideGuardianRight);
             }
+            if(retVal.right.length === 0 && rightObject.symbol1 === rightObject.symbol2) {
+                retVal.right.push(rightObject.symbol1);
+            }
           }
+        }
+        if(this.insideGuardianLeft && this.insideGuardianMiddle && this.insideGuardianRight) {
+            if(this.outsideGuardianLeft && this.outsideGuardianMiddle && this.outsideGuardianRight) {
+                totalShapes = retVal.left.length + retVal.right.length + retVal.middle.length;
+                console.log(totalShapes)
+                if(totalShapes % 2 === 1) {
+                    originalLeft = this.threeD.find(item => item.name === this.outsideGuardianLeft);
+                    currentLeft1 = this.threeD.find(item => item.symbol1 === originalLeft.symbol1 && item.symbol2 === retVal.middle[0] && item.isPure);
+                    currentLeft2 = this.threeD.find(item => item.symbol2 === originalLeft.symbol2 && item.symbol1 === retVal.middle[0] && item.isPure);
+
+                    originalMiddle = this.threeD.find(item => item.name === this.outsideGuardianMiddle);
+                    currentMiddle1 = this.threeD.find(item => item.symbol1 === originalMiddle.symbol1 && item.symbol2 === retVal.left[0] && item.isPure);
+                    currentMiddle2 = this.threeD.find(item => item.symbol2 === originalMiddle.symbol2 && item.symbol1 === retVal.left[0] && item.isPure);
+
+                    if(currentLeft1) {
+                        retVal.left.push(currentLeft1.symbol1);
+                    } else if(currentLeft2) {
+                        retVal.left.push(currentLeft2.symbol1);
+                    }
+
+                    if(currentMiddle1) {
+                        retVal.middle.push(currentMiddle1.symbol1);
+                    } else if(currentMiddle2) {
+                        retVal.middle.push(currentMiddle2.symbol1);
+                    }
+                }
+            }
         }
         return retVal;
       },
@@ -266,11 +305,9 @@
                                 x-text="neededThreeD()[0]?.name"
                             >
                             </span>
-
                             <span
                                 x-html="displayNeededSymbols(neededSymbols()?.left ?? [])"
-                                >-</span
-                            >
+                                ></span>
                         </div>
                         <div class="flex flex-col gap-2 w-1/3">
                             <span
@@ -293,45 +330,8 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    class="bg-gray-200 p-4 border-2 border-gray-300 mt-8 hidden"
-                >
-                    General Information:
-                    <br /><br />
-                    <div>Step 1</div>
-                    <div>
-                        Inside People (ones who get transported): <br />
-                        <span>
-                            One member types symbols in chat (from left to
-                            right)<br />
-                            Everyone takes note of what position their guardian
-                            is, and the animated symbols on the back wall.
-                            <br />
-                            You want to wind up with 2 of the symbol your
-                            guardian is holding.
-                            <br />
-                            So kill Knights and if the symbol does not match
-                            your guardian, deposit it at the statue with the
-                            same symbol.<br />
-                            After sending 2 symbols you will "fake" die. (see
-                            below).
-                        </span>
-                    </div>
-                    <br />
-                    <div>
-                        Outside People (ones who stay): <br />
-                        <span>
-                            You have to dissect the statues so they do not
-                            contain the symbol the inside guardian statues are
-                            holding. <br />
-                            <br />
-                        </span>
-                    </div>
-                    <div>Step 1.5</div>
-                    <div>Fake death</div>
-                    <div>After your fake death your ghost will</div>
-                </div>
             </div>
         </div>
+        Big thanks to seratne on reddit
     </body>
 </html>
